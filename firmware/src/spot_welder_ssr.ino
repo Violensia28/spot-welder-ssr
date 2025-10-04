@@ -70,36 +70,7 @@ void setupWebServer() {
   });
   
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request){
-    if(request->hasParam("time")) weldTime = request->getParam("time")->value().toInt();
-    if(request->hasParam("pulses")) pulseCount = request->getParam("pulses")->value().toInt();
-    if(request->hasParam("mode")) currentMode = request->getParam("mode")->value();
-    request->send(200, "text/plain", "Settings Updated");
-  });
-  
-  server.begin();
-}
-
-void handleMicroswitch() {
-  startWelding();
-}
-
-void startWelding() {
-  beep(2);
-  
-  for(int i = 0; i < pulseCount; i++) {
-    digitalWrite(SSR_PIN, HIGH);
-    delay(weldTime);
-    digitalWrite(SSR_PIN, LOW);
-    if(i < pulseCount - 1) delay(pulseInterval);
-  }
-  
-  beep(1);
-}
-
-void beep(int times) {
-  for(int i = 0; i < times; i++) {
-    digitalWrite(BUZZER_PIN, HIGH);
-    delay(100);
+    if(request->hasParam("time")) weld    delay(100);
     digitalWrite(BUZZER_PIN, LOW);
     delay(100);
   }
