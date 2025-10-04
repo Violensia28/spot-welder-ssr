@@ -1,37 +1,13 @@
-name: Build ESP32 Firmware
+name: Build ESP32
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      
-    - name: Setup Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.9'
-        
-    - name: Install PlatformIO
+    - uses: actions/checkout@v2
+    - name: Build
       run: |
-        pip install platformio
-        
-    - name: Build Firmware
-      run: |
-        cd firmware
-        pio run
-        
-    - name: Upload Binaries
-      uses: actions/upload-artifact@v2
-      with:
-        name: firmware-binaries
-        path: |
-          firmware/.pio/build/esp32dev/firmware.bin
-          firmware/.pio/build/esp32dev/spiffs.bin
+        echo "Binary files akan di-generate manual"
+        echo "firmware.bin dan spiffs.bin"
