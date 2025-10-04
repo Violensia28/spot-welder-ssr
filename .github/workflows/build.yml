@@ -15,9 +15,9 @@ jobs:
       uses: actions/checkout@v3
       
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v3
       with:
-        python-version: '3.x'
+        python-version: '3.9'
         
     - name: Install PlatformIO
       run: |
@@ -29,4 +29,9 @@ jobs:
         pio run
         
     - name: Upload Binaries
-      uses: actions
+      uses: actions/upload-artifact@v2
+      with:
+        name: firmware-binaries
+        path: |
+          firmware/.pio/build/esp32dev/firmware.bin
+          firmware/.pio/build/esp32dev/spiffs.bin
