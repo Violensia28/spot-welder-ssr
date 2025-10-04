@@ -1,4 +1,4 @@
-name: Build ESP32 Firmware
+name: Build ESP32 Spot Welder
 
 on:
   push:
@@ -7,26 +7,38 @@ on:
     branches: [ main ]
 
 jobs:
-  build-firmware:
+  build:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup PlatformIO
-      uses: platformio/setup-platformio@v2
-      
-    - name: Build Project
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install PlatformIO Core
+      run: |
+        python -m pip install --upgrade pip
+        pip install platformio
+        pio --version
+        
+    - name: Build Firmware
       run: |
         cd firmware
-        pio run
+        pio run -e esp32dev
         
-    - name: Upload Firmware Binaries
+    - name: List Build Files
+      run: |
+        cd firmware
+        find .pio -name "*.bin" -type f
+        ls -la .pio/build/esp32dev/
+        
+    - name: Upload Firmware
       uses: actions/upload-artifact@v4
       with:
-        name: spot-welder-firmware
+        name: spot-welder-binaries
         path: |
-          firmware/.pio/build/esp32dev/firmware.bin
-          firmware/.pio/build/esp32dev/spiffs.bin
-        retention-days: 30
+          firmware/.pio/build/esp32dev/firmware
