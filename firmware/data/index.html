@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spot Welder SSR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ SPOT WELDER SSR</h1>
+        
+        <div class="status-panel">
+            <div class="status-item">
+                <span class="label">Mode:</span>
+                <span id="currentMode">MANUAL</span>
+            </div>
+            <div class="status-item">
+                <span class="label">Status:</span>
+                <span id="weldStatus">READY</span>
+            </div>
+        </div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="setMode('manual')">MANUAL SPOT</button>
+            <button class="mode-btn" onclick="setMode('auto')">AUTO SPOT</button>
+        </div>
+
+        <div id="manualSettings" class="settings-panel">
+            <h3>Manual Settings</h3>
+            <div class="slider-container">
+                <label>Weld Time: <span id="weldTimeValue">100</span>ms</label>
+                <input type="range" min="10" max="500" value="100" class="slider" id="weldTime">
+            </div>
+            <div class="slider-container">
+                <label>Pulse Count: <span id="pulseCountValue">1</span></label>
+                <input type="range" min="1" max="5" value="1" class="slider" id="pulseCount">
+            </div>
+        </div>
+
+        <div id="autoSettings" class="settings-panel" style="display:none">
+            <h3>Auto Settings</h3>
+            <div class="thickness-selector">
+                <label>Nickel Thickness:</label>
+                <select id="thicknessSelect">
+                    <option value="0.10">0.10 mm</option>
+                    <option value="0.15" selected>0.15 mm</option>
+                    <option value="0.20">0.20 mm</option>
+                    <option value="0.25">0.25 mm</option>
+                    <option value="0.30">0.30 mm</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="control-buttons">
+            <button class="weld-btn" onclick="startWelding()">🔥 START SPOT WELD</button>
+            <button class="stop-btn" onclick="emergencyStop()">🛑 EMERGENCY STOP</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
