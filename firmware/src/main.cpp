@@ -30,6 +30,9 @@ void beep(int times);
 
 void setup() {
   Serial.begin(115200);
+  delay(1000);
+  
+  Serial.println("=== SPOT WELDER SSR STARTING ===");
   
   // Initialize pins
   pinMode(SSR_PIN, OUTPUT);
@@ -41,41 +44,74 @@ void setup() {
   // Initialize SPIFFS
   if(!SPIFFS.begin(true)){
     Serial.println("SPIFFS Mount Failed");
-    return;
+  } else {
+    Serial.println("SPIFFS Mount Success");
   }
   
-  // Setup WiFi Access Point
-  WiFi.softAP(ssid, password);
-  IPAddress IP = WiFi.softAPIP();
-  Serial.print("AP IP address: ");
-  Serial.println(IP);
+  // WiFi Configuration
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(IPAddress(192,168,4,1), IPAddress(192,168,4,1), IPAddress(255,255,255,0));
+  
+  bool apStatus = WiFi.softAP(ssid, password, 6, 0, 4);
+  
+  if(!apStatus) {
+    Serial.println("WiFi AP Failed to Start");
+  } else {
+    Serial.println("WiFi AP Started");
+  }
+  
+  delay(2000);
+  
+  Serial.print("AP SSID: ");
+  Serial.println(ssid);
+  Serial.print("AP IP: ");
+  Serial.println(WiFi.softAPIP());
   
   setupWebServer();
   
-  // Attach interrupt for microswitch
   attachInterrupt(digitalPinToInterrupt(MICROSWITCH_PIN), handleMicroswitch, FALLING);
   
-  beep(1); // Startup beep
+  beep(2);
+  Serial.println("Spot Welder Ready!");
 }
 
 void loop() {
+  static unsigned long lastStatusCheck = 0;
+  
+  if(millis() - lastStatusCheck > 10000) {
+    lastStatusCheck = millis();
+    int stations = WiFi.softAPgetStationNum();
+    Serial.print("Connected Stations: ");
+    Serial.println(stations);
+  }
+  
+  int blinkDelay = (WiFi.softAPgetStationNum() > 0) ? 200 : 500;
+  
   digitalWrite(STATUS_LED, HIGH);
-  delay(500);
+  delay(blinkDelay);
   digitalWrite(STATUS_LED, LOW);
-  delay(500);
+  delay(blinkDelay);
 }
 
 void setupWebServer() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/index.html", "text/html");
+    if(SPIFFS.exists("/index.html")) {
+      request->send(SPIFFS, "/index.html", "text/html");
+    } else {
+      request->send(200, "text/html", "<h1>Spot Welder Ready</h1>");
+    }
   });
   
   server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/style.css", "text/css");
+    if(SPIFFS.exists("/style.css")) {
+      request->send(SPIFFS, "/style.css", "text/css");
+    }
   });
   
   server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/script.js", "text/javascript");
+    if(SPIFFS.exists("/script.js")) {
+      request->send(SPIFFS, "/script.js", "text/javascript");
+    }
   });
   
   server.on("/weld", HTTP_GET, [](AsyncWebServerRequest *request){
