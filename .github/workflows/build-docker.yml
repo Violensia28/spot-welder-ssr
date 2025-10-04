@@ -1,0 +1,23 @@
+name: Build with Docker
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: platformio/platformio
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Build
+      run: |
+        cd firmware
+        pio run
+        
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: firmware-docker
+        path: firmware/.pio/build/esp32dev/*.bin
