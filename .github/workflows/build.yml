@@ -1,13 +1,32 @@
-name: Build ESP32
+name: Build ESP32 Firmware
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build:
+  build-firmware:
     runs-on: ubuntu-latest
+    
     steps:
-    - uses: actions/checkout@v2
-    - name: Build
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup PlatformIO
+      uses: platformio/setup-platformio@v2
+      
+    - name: Build Project
       run: |
-        echo "Binary files akan di-generate manual"
-        echo "firmware.bin dan spiffs.bin"
+        cd firmware
+        pio run
+        
+    - name: Upload Firmware Binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: spot-welder-firmware
+        path: |
+          firmware/.pio/build/esp32dev/firmware.bin
+          firmware/.pio/build/esp32dev/spiffs.bin
+        retention-days: 30
